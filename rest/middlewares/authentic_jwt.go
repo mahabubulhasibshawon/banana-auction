@@ -1,11 +1,12 @@
-package handlers
+package middlewares
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+
+	"banana-auction/config"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -16,7 +17,8 @@ const (
 	userIDKey ctxKey = "userID"
 )
 
-func JwtAuthMiddleware(next http.Handler) http.Handler {
+func JwtAuthenticationMiddleware(next http.Handler) http.Handler {
+	cfg := config.GetConfig()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
@@ -35,7 +37,7 @@ func JwtAuthMiddleware(next http.Handler) http.Handler {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte("mock-secret"), nil
+			return []byte(cfg.JwtSecretKey), nil
 		})
 
 		if err != nil {
@@ -64,27 +66,4 @@ func JwtAuthMiddleware(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), userIDKey, userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-func CorsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-func getUserIDFromContext(ctx context.Context) (int, error) {
-	userID, ok := ctx.Value(userIDKey).(int)
-	if !ok {
-		return 0, errors.New("user ID not found in context")
-	}
-	return userID, nil
 }
