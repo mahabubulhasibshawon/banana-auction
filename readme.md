@@ -307,15 +307,55 @@ All endpoints except `/signup` and `/login` require a valid JWT token in the `Au
 ## Project Structure
 
 ```
-banana-auction/
-├── cmd/                # Main application entry point
-├── config/             # Configuration loading
-├── database/           # Database operations
-├── rest/               # REST API handlers, middlewares, and routes
-├── utils/              # Utility functions (e.g., JWT, password hashing)
-├── models/             # Data models
-├── go.mod              # Go module file
-└── .env                # Environment variables
+├── api
+│   ├── handlers
+│   │   ├── auction_handler.go
+│   │   ├── bid_handler.go
+│   │   ├── lot_handler.go
+│   │   └── user_handler.go
+│   ├── middlewares
+│   │   ├── cors.go
+│   │   └── jwt.go
+│   └── routes.go
+├── cmd
+│   └── serve.go
+├── config
+│   └── config.go
+├── go.mod
+├── go.sum
+├── image-1.png
+├── internal
+│   ├── domain
+│   │   ├── auction
+│   │   │   ├── entiry.go
+│   │   │   ├── repository.go
+│   │   │   └── service.go
+│   │   ├── bid
+│   │   │   ├── entiry.go
+│   │   │   ├── repository.go
+│   │   │   └── service.go
+│   │   ├── lot
+│   │   │   ├── entity.go
+│   │   │   ├── repository.go
+│   │   │   └── service.go
+│   │   └── user
+│   │       ├── entity.go
+│   │       ├── repository.go
+│   │       └── service.go
+│   └── infrastructure
+│       ├── persistence
+│       │   └── postgres
+│       │       ├── auction_repo.go
+│       │       ├── bid_repo.go
+│       │       ├── db.go
+│       │       ├── lot_repo.go
+│       │       └── user_repo.go
+│       └── utils
+│           ├── jwt.go
+│           └── password.go
+├── main.go
+└── readme.md
+
 ```
 
 ## Contributing
